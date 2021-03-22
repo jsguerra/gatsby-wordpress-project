@@ -27,6 +27,27 @@ module.exports = {
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
       },
     },
+    {
+      resolve: `gatsby-source-wordpress`,
+      options: {
+        // the only required plugin option for WordPress is the GraphQL url.
+        url:
+          process.env.WPGRAPHQL_URL ||
+          `http://headless.local/graphql`,
+          includedRoutes: [
+            "**/categories",
+            "**/posts",
+            "**/pages",
+            "**/media",
+            "**/tags",
+            "**/taxonomies",
+            "**/users",
+            "**/*/*/menus", // <== Menu api endpoint
+            "**/*/*/menu-locations", // <== Menu api endpoint
+          ],
+      },
+    },
+    `gatsby-plugin-sitemap`,
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,

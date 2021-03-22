@@ -1,22 +1,72 @@
 import React from "react"
-import { Link } from "gatsby"
+import { graphql, Link } from "gatsby"
 
 import Layout from "../components/layout"
-import Image from "../components/image"
 import SEO from "../components/seo"
+import Img from "gatsby-image"
 
-const IndexPage = () => (
+const IndexPage = ({ data }) => (
   <Layout>
     <SEO title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
-      <Image />
-    </div>
-    <Link to="/page-2/">Go to page 2</Link> <br />
-    <Link to="/using-typescript/">Go to "Using TypeScript"</Link>
+    <ul style={{ listStyle: "none"}}>
+      {data.allWpPost.edges.map(post => (
+        <li key={post.node.id} style={{ padding: "20px 0", borderBottom: "1px solid #ccc" }}>
+          <Link
+            to={`/post/${post.node.slug}`}
+            style={{ display: "flex", color: "black", textDecoration: "none" }}
+            >
+            <Img
+              fluid={post.node.featuredImage.node.localFile.childImageSharp.fluid}
+              alt={post.node.title}
+              style={{ width: "25%", marginRight: 20 }}
+            />
+            <div style={{ width: "75%" }}>
+              <h3
+                dangerouslySetInnerHTML={{ __html: post.node.title }}
+                style={{ marginBottom: 0 }}
+              />
+              <p style={{ margin: 0, color: "grey" }}>
+                Written by {post.node.author.node.name} on {post.node.date}
+              </p>
+              <div dangerouslySetInnerHTML={{ __html: post.node.excerpt }} />
+            </div>
+          </Link>
+        </li>
+      ))}
+    </ul>
   </Layout>
 )
 
 export default IndexPage
+
+export const query = graphql`
+  query {
+    allWpPost {
+      edges {
+        node {
+          id
+          title
+          excerpt
+          slug
+          author {
+            node {
+              name
+            }
+          }
+          date(formatString: "MMMM DD, YYYY")
+          featuredImage {
+            node {
+              localFile {
+                childImageSharp {
+                  fluid {
+                    ...GatsbyImageSharpFluid
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
